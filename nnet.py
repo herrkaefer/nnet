@@ -3,7 +3,6 @@
 # Yang Liu <gloolar@gmail.com>
 
 
-import math
 import numpy as np
 import scipy as sp
 
@@ -11,12 +10,12 @@ import scipy as sp
 np.random.seed(0)
 
 
-# our sigmoid function, tanh is a little nicer than the standard 1/(1+e^-x)
+# sigmoid function for neurons
 def sigmoid(x):
     return sp.tanh(x)
 
 
-# derivative of our sigmoid function, in terms of the output (i.e. y)
+# derivative of sigmoid function, in terms of the output (i.e. y)
 def dsigmoid(y):
     return 1.0 - y**2
 
@@ -43,9 +42,9 @@ class NNet:
 
         self.deltas = [0.0]*self.nlayers # for layer 1->nlayers
 
-        print self.X
-        print self.W
-        print self.C
+        # print self.X
+        # print self.W
+        # print self.C
 
 
     def update(self, inputs):
@@ -98,66 +97,64 @@ class NNet:
         return error
 
 
-    def predict(self, patterns):
-        targets = []
-        for p in patterns:
-            targets.append(self.update(p[0]).tolist())
-            print p[0], '->', self.update(p[0])
-        return targets
+    def predict(self, X):
+        y = np.zeros((len(X), len(X[self.nlayers])-1))
+        for idx, input in enumerate(X):
+            output = self.update(input)
+            # print type(output)
+            # print output[0,0]
+            y[idx, :] = output
+            # print input, '->', y
+        return y
 
 
-    def score(self, patterns):
-        # MLS error
+    def score(self, X, y):
+        '''MLS error'''
         error = 0.0
-        for p in patterns:
-            error = error + np.sum((self.update(p[0]) - np.array(p[1]).reshape(len(p[1]),1)) ** 2)
-        return error/len(patterns)
+        for idx, input in enumerate(X):
+            error = error + np.sum((self.update(input) - np.array(y[idx]).reshape(len(y[idx]),1)) ** 2)
+        return error/len(X)
 
 
     def weights(self):
-        # print 'Input weights:'
-        # for i in range(self.ni):
-        #     print self.wi[i]
-        # print
-        # print 'Output weights:'
-        # for j in range(self.nh):
-        #     print self.wo[j]
-        pass
+        return self.W
 
 
-    def train(self, patterns, iterations=1000, learning_rate=0.1, M=0.0):
+    def train(self, X, y, iterations=3000, learning_rate=0.1, M=0.0):
         # M: momentum factor
         for i in xrange(iterations):
             error = 0.0
-            for p in patterns: # shuffle?
-                inputs = p[0]
-                targets = p[1]
-                self.update(inputs)
-                error = error + self.back_propagate(targets, learning_rate, M)
+            for idx, input in enumerate(X): # shuffle?
+                self.update(input)
+                error = error + self.back_propagate(y[idx], learning_rate, M)
             if i % 1000 == 0:
                 pass #print 'iter: %5d, error: %-14f' % (i, error)
-        print 'iter: %5d, error: %-14f' % (i+1, error)
+        print 'iter: %5d, last error of BP: %-14f' % (i+1, error)
 
 
 def demo():
-    # Teach network XOR function
-    pat = [
+    XOR = np.array([
         [[0,0], [0]],
         [[0,1], [1]],
         [[1,0], [1]],
         [[1,1], [0]]
-    ]
+    ])
 
-    # create a network with two input, two hidden, and one output nodes
+    X = XOR[:,0]
+    y = XOR[:,1]
+
     nn = NNet([2, 2, 1])
+
     # train it with some patterns
-    nn.train(pat)
+    nn.train(X, y)
+    
     # test it
-    print "\npredict: \n"
-    labels = nn.predict(pat)
-    print labels
-    print "\nscore:\n"
-    print nn.score(pat)
+    print "\npredicted outputs: \n"
+    y_pred = nn.predict(X)
+    print y_pred
+    
+    # score
+    print "\nscore: %.10f" % nn.score(X, y)
 
 
 if __name__ == '__main__':
