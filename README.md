@@ -1,4 +1,4 @@
-# Neural Networks with Back-Propagation Algorithm
+# Neural Networks with Back-Propagation
 
 ## Features
 
@@ -9,7 +9,11 @@ Note: all hidden and output neurons are with tanh-type transformation
 
 ## Usage
 
-- data
+```
+from nnet import NNet
+```
+
+- prepare data
 
 accept plain list or numpy array.
 
@@ -19,13 +23,13 @@ accept plain list or numpy array.
 nn = NNet([n_0, n_1, ..., n_L])
 ```
 
-- training
+- train NNet
 
 ```
 nn.train(X, y)
 ```
 
-- training MLS error
+- get training MLS error
 
 ```
 error = nn.score(X, y)
