@@ -120,7 +120,7 @@ class NNet:
         return self.W
 
 
-    def train(self, X, y, iterations=3000, learning_rate=0.1, M=0.0):
+    def train(self, X, y, iterations=5000, learning_rate=0.1, M=0.0):
         # M: momentum factor
         for i in xrange(iterations):
             error = 0.0
@@ -133,15 +133,28 @@ class NNet:
 
 
 def demo():
-    XOR = np.array([
-        [[0,0], [0]],
-        [[0,1], [1]],
-        [[1,0], [1]],
-        [[1,1], [0]]
-    ])
+    # XOR = np.array([
+    #     [[0,0], [0]],
+    #     [[0,1], [1]],
+    #     [[1,0], [1]],
+    #     [[1,1], [0]]
+    # ])
 
-    X = XOR[:,0]
-    y = XOR[:,1]
+    # X = XOR[:,0]
+    # y = XOR[:,1]
+
+    X = [
+        [0,0],
+        [0,1],
+        [1,0],
+        [1,1]]
+    
+    y = [
+        [0],
+        [1],
+        [1],
+        [0]]
+
 
     nn = NNet([2, 2, 1])
 
